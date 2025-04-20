@@ -19,7 +19,7 @@
       body {
         height: 100%;
         margin: 0;
-        background: url("/static/bg.jpg") no-repeat center center fixed;
+        background: url("/static/bg6.png") no-repeat center center fixed;
         background-size: cover;
         font-family: "Segoe UI", sans-serif;
         transition: background-color 0.3s, color 0.3s;
@@ -129,7 +129,6 @@
 
       body.dark-mode .form-control,
       body.dark-mode .form-check-label {
-        background-color: #343a40;
         color: #f8f9fa;
       }
 
@@ -148,6 +147,23 @@
 
       body.dark-mode .sidebar-quote {
         color: #d1d1d1;
+      }
+
+      body.dark-mode .text-danger {
+        color: #ff6b6b !important; /* Brighter red */
+      }
+
+      body.dark-mode .text-warning {
+        color: #ffd54f !important; /* Brighter yellow */
+      }
+
+      body.dark-mode .card-title.text-danger,
+      body.dark-mode .card-title.text-warning {
+        font-weight: bold;
+      }
+
+      body.dark-mode .result-card p {
+        color: #f8f9fa !important; /* Make paragraph text inside cards visible */
       }
 
       @media (max-width: 768px) {
@@ -226,50 +242,124 @@
         </p>
 
         <form method="POST" enctype="multipart/form-data">
-          <div class="mb-3">
+          <div id="loading" class="text-center mt-3" style="display: none">
+            <div class="spinner-border text-success" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Analyzing image, please wait...</p>
+          </div>
+
+          <!-- Dietary Restrictions First -->
+          <div class="mb-4">
+            <label class="form-label">Select your dietary restrictions:</label>
+            <div class="container-fluid px-0">
+              <div class="row">
+                <div class="col-3">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="dietary"
+                      value="vegan"
+                      id="vegan"
+                    />
+                    <label class="form-check-label" for="vegan">🌱 Vegan</label>
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="dietary"
+                      value="vegetarian"
+                      id="vegetarian"
+                    />
+                    <label class="form-check-label" for="vegetarian"
+                      >🥗 Vegetarian</label
+                    >
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="dietary"
+                      value="pork_free"
+                      id="pork_free"
+                    />
+                    <label class="form-check-label" for="pork_free"
+                      >🐖 Pork-Free</label
+                    >
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="dietary"
+                      value="beef_free"
+                      id="beef_free"
+                    />
+                    <label class="form-check-label" for="beef_free"
+                      >🐄 Beef-Free</label
+                    >
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div class="form-check mt-2">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="dietary"
+                      value="nut_allergy"
+                      id="nut_allergy"
+                    />
+                    <label class="form-check-label" for="nut_allergy"
+                      >🥜 Nut Allergy</label
+                    >
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div class="form-check mt-2">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="dietary"
+                      value="gluten_free"
+                      id="gluten_free"
+                    />
+                    <label class="form-check-label" for="gluten_free"
+                      >🚫 Gluten-Free</label
+                    >
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="form-check mt-2">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="dietary"
+                      value="fitness_friendly"
+                      id="fitness_friendly"
+                    />
+                    <label class="form-check-label" for="fitness_friendly"
+                      >🏋️ Fitness-Friendly</label
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
             <label class="form-label">Upload a food label image:</label>
-            <input class="form-control" type="file" name="image" required />
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Select your dietary restrictions:</label
-            ><br />
-            <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                name="dietary"
-                value="vegan"
-                id="vegan"
-              />
-              <label class="form-check-label" for="vegan">🌱 Vegan</label>
+            <div class="input-group">
+              <input type="file" class="form-control" name="image" required />
+              <button class="btn btn-success" type="submit">Analyze</button>
             </div>
-            <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                name="dietary"
-                value="gluten_free"
-                id="gluten"
-              />
-              <label class="form-check-label" for="gluten"
-                >🚫 Gluten-Free</label
-              >
-            </div>
-            <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                name="dietary"
-                value="nut_allergy"
-                id="nut"
-              />
-              <label class="form-check-label" for="nut">🥜 Nut Allergy</label>
-            </div>
-          </div>
-
-          <div class="text-center">
-            <button type="submit" class="btn btn-success px-4">Analyze</button>
           </div>
         </form>
 
@@ -282,10 +372,10 @@
             style="max-width: 300px"
           />
         </div>
-        {% endif %} {% if ingredients %}
+        {% endif %} {% if ingredients_extracted %}
         <div class="alert alert-info mt-4">
           <h5 class="mb-2">🧾 Detected Ingredients:</h5>
-          {% for item in ingredients %}
+          {% for item in ingredients_extracted %}
           <span class="badge rounded-pill bg-secondary me-1">{{ item }}</span>
           {% endfor %}
         </div>
@@ -324,6 +414,10 @@
         ?.addEventListener("change", function () {
           document.body.classList.toggle("dark-mode", this.checked);
         });
+
+      document.querySelector("form").addEventListener("submit", function () {
+        document.getElementById("loading").style.display = "block";
+      });
     </script>
   </body>
 </html>
