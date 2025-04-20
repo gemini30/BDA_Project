@@ -7,7 +7,7 @@ import re
 import difflib
 from typing import List, Dict
 
-# === Set Tesseract Path (Windows Only) ===
+# === Set Tesseract Path for Windows ===
 if platform.system() == 'Windows':
     pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
@@ -25,7 +25,7 @@ def extract_text(image_path: str) -> str:
     processed_img = preprocess_image(image_path)
     return pytesseract.image_to_string(processed_img)
 
-# === Ingredient List Extraction Using Fuzzy Matching ===
+# === Ingredient Extraction Using Fuzzy Matching ===
 def extract_ingredients(text: str) -> List[str]:
     text = text.lower().replace('\n', ' ')
     words = text.split()
@@ -44,7 +44,7 @@ def extract_ingredients(text: str) -> List[str]:
             return [ing.strip() for ing in re.split(r',|\n', cleaned) if ing.strip()]
     return []
 
-# === Check for Dietary Restrictions ===
+# === Dietary Restriction Matching ===
 def check_dietary_restrictions(extracted_text: str, selected_categories: List[str], category_map: Dict[str, List[str]]) -> List[str]:
     text = extracted_text.lower()
     flagged = []
@@ -54,14 +54,14 @@ def check_dietary_restrictions(extracted_text: str, selected_categories: List[st
                 flagged.append(f"{item} ({category})")
     return flagged
 
-# === Check for Known Toxic Ingredients ===
+# === Toxic Ingredient Matching ===
 toxic_ingredients = ['sodium benzoate', 'aspartame', 'bht', 'bpa', 'msg', 'red 40']
 
 def check_toxic_ingredients(text: str) -> List[str]:
     text = text.lower()
     return [toxic for toxic in toxic_ingredients if toxic in text]
 
-# === Main Analysis Function ===
+# === Wrapper Function for Label Analysis ===
 def analyze_label(image_path: str, selected_categories: List[str], category_map: Dict[str, List[str]]) -> Dict:
     text = extract_text(image_path)
     ingredients = extract_ingredients(text)
@@ -74,7 +74,7 @@ def analyze_label(image_path: str, selected_categories: List[str], category_map:
         "tox_flags": tox_flags
     }
 
-# === Debug/Test Block ===
+# === Debugging / Test Mode ===
 if __name__ == "__main__":
     category_map = {
         "vegan": ["milk", "cheese", "butter", "egg", "honey", "gelatin", "casein", "lactose", "whey", "albumin", "carmine", "shellac"],

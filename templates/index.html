@@ -1,423 +1,94 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>EatSafe</title>
+{% extends "base.html" %}
+{% block content %}
+<div class="glass-box">
+  <h1 class="text-center title mb-3">🥗 EatSafe</h1>
+  <p class="text-center subtitle mb-4">
+    Upload a food label to check for dietary safety and toxicity ⚕️
+  </p>
 
-    <!-- Bootstrap + Icons -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-      rel="stylesheet"
-    />
-
-    <style>
-      html,
-      body {
-        height: 100%;
-        margin: 0;
-        background: url("/static/bg6.png") no-repeat center center fixed;
-        background-size: cover;
-        font-family: "Segoe UI", sans-serif;
-        transition: background-color 0.3s, color 0.3s;
-      }
-
-      .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 250px;
-        height: 100%;
-        background-color: rgba(255, 255, 255, 0.95);
-        padding: 70px 15px 30px 15px;
-        transition: transform 0.3s ease-in-out;
-        z-index: 1000;
-        overflow-y: auto;
-      }
-
-      .sidebar.hidden {
-        transform: translateX(-100%);
-      }
-
-      .main-content {
-        margin-left: 250px;
-        transition: margin-left 0.3s ease-in-out;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 40px 30px 40px 60px;
-      }
-
-      .main-content.full {
-        margin-left: 0;
-      }
-
-      .glass-box {
-        background-color: rgba(255, 255, 255, 0.95);
-        padding: 35px;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-        width: 100%;
-        max-width: 700px;
-      }
-
-      .toggle-btn {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        background-color: #198754;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 8px 12px;
-        z-index: 1101;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      }
-
-      .title {
-        font-weight: 700;
-        font-size: 2.2rem;
-        color: #198754;
-      }
-      .subtitle {
-        color: #6c757d;
-        transition: color 0.3s ease-in-out;
-      }
-      body.dark-mode .subtitle {
-        color: #e0e0e0;
-      }
-      .badge {
-        font-size: 0.95rem;
-        padding: 0.6em 0.9em;
-      }
-
-      .result-card {
-        border-radius: 15px;
-      }
-
-      .footer-note {
-        font-size: 0.8rem;
-        color: #6c757d;
-        text-align: center;
-        margin-top: 20px;
-      }
-
-      .sidebar-quote {
-        color: #6c757d;
-        font-style: italic;
-        margin-left: 5px;
-      }
-
-      body.dark-mode {
-        background-color: #1e1e1e !important;
-        color: #f8f9fa !important;
-      }
-
-      body.dark-mode .sidebar {
-        background-color: rgba(33, 37, 41, 0.95);
-        color: #f8f9fa;
-      }
-
-      body.dark-mode .glass-box {
-        background-color: rgba(33, 37, 41, 0.95);
-        color: #f8f9fa;
-      }
-
-      body.dark-mode .form-control,
-      body.dark-mode .form-check-label {
-        color: #f8f9fa;
-      }
-
-      body.dark-mode .result-card {
-        background-color: #2c3035;
-      }
-
-      body.dark-mode .list-group-item {
-        background-color: transparent;
-        color: #f8f9fa;
-      }
-
-      body.dark-mode .list-group-item:hover {
-        background-color: #495057;
-      }
-
-      body.dark-mode .sidebar-quote {
-        color: #d1d1d1;
-      }
-
-      body.dark-mode .text-danger {
-        color: #ff6b6b !important; /* Brighter red */
-      }
-
-      body.dark-mode .text-warning {
-        color: #ffd54f !important; /* Brighter yellow */
-      }
-
-      body.dark-mode .card-title.text-danger,
-      body.dark-mode .card-title.text-warning {
-        font-weight: bold;
-      }
-
-      body.dark-mode .result-card p {
-        color: #f8f9fa !important; /* Make paragraph text inside cards visible */
-      }
-
-      @media (max-width: 768px) {
-        .main-content {
-          margin-left: 0;
-          padding: 20px 15px;
-        }
-
-        .glass-box {
-          margin: 20px auto;
-        }
-
-        .sidebar {
-          width: 100%;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <!-- Sidebar Toggle -->
-    <button class="toggle-btn" onclick="toggleSidebar()">
-      <i class="bi bi-list fs-4"></i>
-    </button>
-
-    <!-- Sidebar -->
-    <div id="sidebar" class="sidebar hidden">
-      <div class="mt-3 mb-4 ps-2">
-        <h4 class="fw-bold text-success mb-0">EatSafe 🍽️</h4>
+  <form method="POST" enctype="multipart/form-data">
+    <div id="loading" class="text-center mt-3" style="display: none">
+      <div class="spinner-border text-success" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
-      <hr />
-
-      <p><strong>Diet Plan:</strong><br />Vegan + Nut-Free</p>
-      <p><strong>Scans Done:</strong> {{ scan_count }}</p>
-
-      <hr />
-      <div class="list-group mb-3">
-        <a
-          href="{{ url_for('history') }}"
-          class="list-group-item list-group-item-action"
-        >
-          <i class="bi bi-journal-text me-2"></i>Scan History
-        </a>
-        <a
-          href="{{ url_for('stats') }}"
-          class="list-group-item list-group-item-action"
-        >
-          <i class="bi bi-pie-chart me-2"></i>Ingredient Stats
-        </a>
-      </div>
-
-      <div class="form-check form-switch mb-3">
-        <input class="form-check-input" type="checkbox" id="darkModeToggle" />
-        <label class="form-check-label" for="darkModeToggle"
-          >🌙 Dark Mode</label
-        >
-      </div>
-
-      <hr />
-      <blockquote class="sidebar-quote small">
-        “Eat food. Not too much. Mostly plants.” – Michael Pollan
-      </blockquote>
-
-      <div class="footer-note">
-        Made with ❤️ for food safety<br />
-        © 2025 EatSafe
-      </div>
+      <p class="mt-2">Analyzing image, please wait...</p>
     </div>
 
-    <!-- Main Content -->
-    <div id="main-content" class="main-content full">
-      <div class="glass-box">
-        <h1 class="text-center title mb-3">🥗 EatSafe</h1>
-        <p class="text-center subtitle mb-4">
-          Upload a food label to check for dietary safety and toxicity ⚕️
-        </p>
-
-        <form method="POST" enctype="multipart/form-data">
-          <div id="loading" class="text-center mt-3" style="display: none">
-            <div class="spinner-border text-success" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <p class="mt-2">Analyzing image, please wait...</p>
-          </div>
-
-          <!-- Dietary Restrictions First -->
-          <div class="mb-4">
-            <label class="form-label">Select your dietary restrictions:</label>
-            <div class="container-fluid px-0">
-              <div class="row">
-                <div class="col-3">
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      name="dietary"
-                      value="vegan"
-                      id="vegan"
-                    />
-                    <label class="form-check-label" for="vegan">🌱 Vegan</label>
-                  </div>
-                </div>
-                <div class="col-3">
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      name="dietary"
-                      value="vegetarian"
-                      id="vegetarian"
-                    />
-                    <label class="form-check-label" for="vegetarian"
-                      >🥗 Vegetarian</label
-                    >
-                  </div>
-                </div>
-                <div class="col-3">
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      name="dietary"
-                      value="pork_free"
-                      id="pork_free"
-                    />
-                    <label class="form-check-label" for="pork_free"
-                      >🐖 Pork-Free</label
-                    >
-                  </div>
-                </div>
-                <div class="col-3">
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      name="dietary"
-                      value="beef_free"
-                      id="beef_free"
-                    />
-                    <label class="form-check-label" for="beef_free"
-                      >🐄 Beef-Free</label
-                    >
-                  </div>
-                </div>
-                <div class="col-3">
-                  <div class="form-check mt-2">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      name="dietary"
-                      value="nut_allergy"
-                      id="nut_allergy"
-                    />
-                    <label class="form-check-label" for="nut_allergy"
-                      >🥜 Nut Allergy</label
-                    >
-                  </div>
-                </div>
-                <div class="col-3">
-                  <div class="form-check mt-2">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      name="dietary"
-                      value="gluten_free"
-                      id="gluten_free"
-                    />
-                    <label class="form-check-label" for="gluten_free"
-                      >🚫 Gluten-Free</label
-                    >
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="form-check mt-2">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      name="dietary"
-                      value="fitness_friendly"
-                      id="fitness_friendly"
-                    />
-                    <label class="form-check-label" for="fitness_friendly"
-                      >🏋️ Fitness-Friendly</label
-                    >
-                  </div>
-                </div>
+    <!-- Dietary Restrictions -->
+    <div class="mb-4">
+      <label class="form-label">Select your dietary restrictions:</label>
+      <div class="container-fluid px-0">
+        <div class="row">
+          {% set prefs = current_user.diet_preferences.split(',') if current_user.is_authenticated and current_user.diet_preferences else [] %}
+          {% set options = [
+            ('vegan', '🌱 Vegan'), ('vegetarian', '🥗 Vegetarian'),
+            ('pork_free', '🐖 Pork-Free'), ('beef_free', '🐄 Beef-Free'),
+            ('nut_allergy', '🥜 Nut Allergy'), ('gluten_free', '🚫 Gluten-Free'),
+            ('fitness_friendly', '🏋️ Fitness-Friendly')
+          ] %}
+          {% for value, label in options %}
+            <div class="col-3">
+              <div class="form-check mt-2">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="dietary"
+                  value="{{ value }}"
+                  id="{{ value }}"
+                  {% if value in prefs %}checked{% endif %}
+                />
+                <label class="form-check-label" for="{{ value }}">{{ label }}</label>
               </div>
             </div>
-          </div>
-
-          <div class="mb-4">
-            <label class="form-label">Upload a food label image:</label>
-            <div class="input-group">
-              <input type="file" class="form-control" name="image" required />
-              <button class="btn btn-success" type="submit">Analyze</button>
-            </div>
-          </div>
-        </form>
-
-        {% if image %}
-        <div class="mt-4 text-center">
-          <h5>📷 Uploaded Image:</h5>
-          <img
-            src="{{ image }}"
-            class="img-thumbnail"
-            style="max-width: 300px"
-          />
-        </div>
-        {% endif %} {% if ingredients_extracted %}
-        <div class="alert alert-info mt-4">
-          <h5 class="mb-2">🧾 Detected Ingredients:</h5>
-          {% for item in ingredients_extracted %}
-          <span class="badge rounded-pill bg-secondary me-1">{{ item }}</span>
           {% endfor %}
         </div>
-        {% endif %} {% if results.restricted %}
-        <div class="card mt-3 border-danger result-card">
-          <div class="card-body">
-            <h5 class="card-title text-danger">
-              ⚠️ Dietary Conflicts Detected
-            </h5>
-            <p>{{ results.restricted }}</p>
-          </div>
-        </div>
-        {% endif %} {% if results.toxicity %}
-        <div class="card mt-3 border-warning result-card">
-          <div class="card-body">
-            <h5 class="card-title text-warning">☣️ Toxic Ingredients Found</h5>
-            {% for ing, level in results.toxicity.items() %}
-            <p><strong>{{ ing.title() }}</strong>: {{ level }} toxicity</p>
-            {% endfor %}
-          </div>
-        </div>
-        {% endif %}
       </div>
     </div>
 
-    <script>
-      function toggleSidebar() {
-        const sidebar = document.getElementById("sidebar");
-        const main = document.getElementById("main-content");
-        sidebar.classList.toggle("hidden");
-        main.classList.toggle("full");
-      }
+    <!-- Upload -->
+    <div class="mb-4">
+      <label class="form-label">Upload a food label image:</label>
+      <div class="input-group">
+        <input type="file" class="form-control" name="image" accept="image/*" required />
+        <button class="btn btn-success" type="submit">Analyze</button>
+      </div>
+    </div>
+  </form>
 
-      document
-        .getElementById("darkModeToggle")
-        ?.addEventListener("change", function () {
-          document.body.classList.toggle("dark-mode", this.checked);
-        });
+  {% if image %}
+    <div class="mt-4 text-center">
+      <h5>📷 Uploaded Image:</h5>
+      <img src="{{ image }}" class="img-thumbnail" style="max-width: 300px" />
+    </div>
+  {% endif %}
 
-      document.querySelector("form").addEventListener("submit", function () {
-        document.getElementById("loading").style.display = "block";
-      });
-    </script>
-  </body>
-</html>
+  {% if ingredients_extracted %}
+    <div class="alert alert-info mt-4">
+      <h5 class="mb-2">🧾 Detected Ingredients:</h5>
+      {% for item in ingredients_extracted %}
+        <span class="badge rounded-pill bg-secondary me-1">{{ item }}</span>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if results.restricted %}
+    <div class="card mt-3 border-danger result-card">
+      <div class="card-body">
+        <h5 class="card-title text-danger">⚠️ Dietary Conflicts Detected</h5>
+        <p>{{ results.restricted }}</p>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if results.toxicity %}
+    <div class="card mt-3 border-warning result-card">
+      <div class="card-body">
+        <h5 class="card-title text-warning">☣️ Toxic Ingredients Found</h5>
+        {% for ing, level in results.toxicity.items() %}
+          <p><strong>{{ ing.title() }}</strong>: {{ level }} toxicity</p>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

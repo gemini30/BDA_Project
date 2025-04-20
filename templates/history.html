@@ -1,4 +1,28 @@
-{% extends "index.html" %} {% block content %}
-<h3>📂 Scan History</h3>
-<p>This is where your past scans will be listed.</p>
+{% extends "base.html" %}
+{% block content %}
+<div class="glass-box mx-auto" style="max-width: 800px;">
+  <h3 class="text-center text-success mb-4">📂 Scan History</h3>
+
+  {% if scans %}
+    {% for scan in scans %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <p><strong>🕒 Date:</strong> {{ scan.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+
+          {% if scan.image_path %}
+            <p><strong>📷 Image:</strong><br />
+              <img src="{{ scan.image_path }}" class="img-thumbnail" style="max-width: 200px;" />
+            </p>
+          {% endif %}
+
+          <p><strong>🧾 Ingredients:</strong> {{ scan.ingredients }}</p>
+          <p><strong>⚠️ Restricted:</strong> {{ scan.restricted }}</p>
+          <p><strong>☣️ Toxic:</strong> {{ scan.toxicity }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted text-center">You have not scanned anything yet.</p>
+  {% endif %}
+</div>
 {% endblock %}

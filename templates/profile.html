@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="glass-box mx-auto" style="max-width: 600px;">
+  <h2 class="text-center text-success mb-4">👤 Profile Settings</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- Dietary Preferences Form -->
+  <form method="POST" action="{{ url_for('profile') }}">
+    <input type="hidden" name="form_type" value="preferences" />
+    <div class="mb-3">
+      <label class="form-label">Update your dietary preferences:</label>
+      {% set all_options = ["vegan", "vegetarian", "pork_free", "beef_free", "nut_allergy", "gluten_free", "fitness_friendly"] %}
+      {% for option in all_options %}
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            name="dietary"
+            value="{{ option }}"
+            id="{{ option }}"
+            {% if option in preferences %}checked{% endif %}
+          />
+          <label class="form-check-label" for="{{ option }}">
+            {{ option.replace("_", " ").title() }}
+          </label>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="d-grid mb-4">
+      <button type="submit" class="btn btn-success">Save Preferences</button>
+    </div>
+  </form>
+
+  <!-- Username & Password Update Form -->
+  <form method="POST" action="{{ url_for('profile') }}">
+    <input type="hidden" name="form_type" value="account" />
+
+    <div class="mb-3">
+      <label class="form-label">Change Username</label>
+      <input type="text" class="form-control" name="new_username" value="{{ current_user.username }}" required />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Change Password</label>
+      <input type="password" class="form-control" name="new_password" placeholder="Enter new password" />
+    </div>
+
+    <div class="d-grid">
+      <button type="submit" class="btn btn-warning">Update Account Info</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

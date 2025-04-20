@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="glass-box mx-auto" style="max-width: 500px;">
+  <h2 class="text-center text-success mb-4">📝 Sign Up for EatSafe</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST">
+    <div class="mb-3">
+      <label for="username" class="form-label">👤 Username</label>
+      <input type="text" class="form-control" name="username" required />
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">🔑 Password</label>
+      <input type="password" class="form-control" name="password" required />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Select your dietary preferences:</label>
+      {% set all_options = [
+        ('vegan', '🌱 Vegan'), ('vegetarian', '🥗 Vegetarian'),
+        ('pork_free', '🐖 Pork-Free'), ('beef_free', '🐄 Beef-Free'),
+        ('nut_allergy', '🥜 Nut Allergy'), ('gluten_free', '🚫 Gluten-Free'),
+        ('fitness_friendly', '🏋️ Fitness-Friendly')
+      ] %}
+      {% for value, label in all_options %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="dietary" value="{{ value }}" id="{{ value }}" />
+          <label class="form-check-label" for="{{ value }}">{{ label }}</label>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="d-grid">
+      <button type="submit" class="btn btn-success">Sign Up</button>
+    </div>
+  </form>
+
+  <div class="mt-3 text-center">
+    <p class="small">Already have an account? <a href="{{ url_for('login') }}">Log in here</a>.</p>
+  </div>
+</div>
+{% endblock %}
