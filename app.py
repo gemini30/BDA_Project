@@ -87,7 +87,7 @@ def index():
             ingredients_list = extract_ingredients(text)
             ingredients_combined = " ".join(ingredients_list)
 
-            diet_flags = check_dietary_restrictions(ingredients_combined, selected_categories, RESTRICTION_MAP)
+            diet_flags = check_dietary_restrictions(ingredients_combined,selected_categories , RESTRICTION_MAP)
             tox_flags = check_toxic_ingredients(ingredients_combined)
 
             results["restricted"] = ", ".join(diet_flags) if diet_flags else "None 🎉"
@@ -143,7 +143,9 @@ def signup():
         if User.query.filter_by(username=username).first():
             flash("Username already exists", "warning")
         else:
-            hashed_pw = generate_password_hash(password)
+            #hashed_pw = generate_password_hash(password)
+            hashed_pw=generate_password_hash(password, method="pbkdf2:sha256")
+
             new_user = User(username=username, password=hashed_pw, diet_preferences=prefs_str)
             db.session.add(new_user)
             db.session.commit()
