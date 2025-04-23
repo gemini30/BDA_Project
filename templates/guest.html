@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="glass-box text-center mx-auto">
+  <h2 class="title">Welcome to EatSafe</h2>
+  <p class="subtitle">Try scanning a food label. No account needed!</p>
+
+  <form method="POST" action="{{ url_for('guest') }}" enctype="multipart/form-data">
+    <div id="loading" class="text-center mt-3" style="display: none">
+      <div class="spinner-border text-success" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Analyzing image, please wait...</p>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label">Select your dietary restrictions:</label>
+      <div class="container-fluid px-0">
+        <div class="row">
+          {% set prefs = current_user.diet_preferences.split(',') if current_user.is_authenticated and current_user.diet_preferences else [] %}
+          {% set options = [
+            ('vegan', '🌱 Vegan'), ('vegetarian', '🥗 Vegetarian'),
+            ('pork_free', '🐖 Pork-Free'), ('beef_free', '🐄 Beef-Free'),
+            ('nut_allergy', '🥜 Nut Allergy'), ('gluten_free', '🚫 Gluten-Free'),
+            ('fitness_friendly', '🏋️ Fitness-Friendly')
+          ] %}
+          {% for value, label in options %}
+            <div class="col-3">
+              <div class="form-check mt-2">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="dietary"
+                  value="{{ value }}"
+                  id="{{ value }}"
+                  {% if value in prefs %}checked{% endif %}
+                />
+                <label class="form-check-label" for="{{ value }}">{{ label }}</label>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <input class="form-control my-2" type="file" name="file" required>
+    <button type="submit" class="btn btn-success">Analyze</button>
+  </form>
+
+  
+
+  {% if image %}
+    <div class="mt-4 text-center">
+      <h5>📷 Uploaded Image:</h5>
+      <img src="{{ image }}" class="img-thumbnail" style="max-width: 300px" />
+    </div>
+  {% endif %}
+
+  {% if ingredients_extracted %}
+    <div class="alert alert-info mt-4">
+      <h5 class="mb-2">🧾 Detected Ingredients:</h5>
+      {% for item in ingredients_extracted %}
+        <span class="badge rounded-pill bg-secondary me-1">{{ item }}</span>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if results.restricted %}
+    <div class="card mt-3 border-danger result-card">
+      <div class="card-body">
+        <h5 class="card-title text-danger">⚠️ Dietary Conflicts Detected</h5>
+        <p>{{ results.restricted }}</p>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if results.toxicity %}
+    <div class="card mt-3 border-warning result-card">
+      <div class="card-body">
+        <h5 class="card-title text-warning">☣️ Toxic Ingredients Found</h5>
+        {% for ing, level in results.toxicity.items() %}
+          <p><strong>{{ ing.title() }}</strong>: {{ level }} toxicity</p>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  <hr class="my-4">
+  <a href="{{ url_for('login') }}" class="btn btn-outline-primary">Login</a>
+  <a href="{{ url_for('signup') }}" class="btn btn-outline-secondary ms-2">Sign Up</a>
+</div>
+{% endblock %}

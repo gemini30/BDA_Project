@@ -65,8 +65,53 @@ RESTRICTION_MAP = {
 }
 
 # === Routes ===
+@app.route('/')
+def load():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))  
+    return render_template('guest.html',image="", ingredients=[],ingredients_extracted=[], results={"restricted": "", "toxicity": {}}) 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route('/guest', methods=['GET','POST'])
+def guest():
+    
+    ingredients_list = []
+    results = {"restricted": "", "toxicity": {}}
+    if request.method == "GET":
+        return render_template('guest.html',image="", ingredients=[],ingredients_extracted=[], results={"restricted": "", "toxicity": {}}) 
+    if request.method == "POST":
+        image = request.files.get('file')
+        if not image:
+            return redirect(url_for('load'))
+        image_path = os.path.join(app.config["UPLOAD_FOLDER"], image.filename)
+        image.save(image_path)
+        image_url = f"/{image_path}"
+
+        selected_categories = request.form.getlist("dietary")
+        dietary_keywords = [item for category in selected_categories for item in RESTRICTION_MAP.get(category, [])]
+        text = extract_text(image_path)
+        ingredients_list = extract_ingredients(text)
+        if len(ingredients_list) == 0 :
+            results["restricted"] =  "Ingredients Not Found. Please Upload a clear image!!"
+            results["toxicity"] = {}
+        else:
+            ingredients_combined = " ".join(ingredients_list)
+            diet_flags = check_dietary_restrictions(ingredients_combined,selected_categories , RESTRICTION_MAP)
+            tox_flags = check_toxic_ingredients(ingredients_combined)
+            results["restricted"] = ", ".join(diet_flags) if diet_flags else "None 🎉"
+            results["toxicity"] = {ingredient: "High" for ingredient in tox_flags}
+
+
+        return render_template(
+            "guest.html",
+            image=image_url,
+            ingredients=" ".join(ingredients_list),
+            ingredients_extracted=ingredients_list,
+            results=results,
+   
+             )
+
+
+@app.route("/index", methods=["GET", "POST"])
 @login_required
 def index():
     image_url = None
