@@ -10,6 +10,9 @@ from typing import List, Dict
 # === Set Tesseract Path for Windows ===
 if platform.system() == 'Windows':
     pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+elif platform.system() == 'Darwin':  
+    pytesseract.pytesseract.tesseract_cmd = '/opt/homebrew/bin/tesseract' #brew install tesseract
+
 
 # === Preprocess Image for OCR ===
 def preprocess_image(image_path: str) -> np.ndarray:
@@ -65,7 +68,8 @@ def check_toxic_ingredients(text: str) -> List[str]:
 def analyze_label(image_path: str, selected_categories: List[str], category_map: Dict[str, List[str]]) -> Dict:
     text = extract_text(image_path)
     ingredients = extract_ingredients(text)
-    diet_flags = check_dietary_restrictions(text, selected_categories, category_map)
+    ingredients_combined = " ".join(ingredients)
+    diet_flags = check_dietary_restrictions(ingredients_combined, selected_categories, category_map)
     tox_flags = check_toxic_ingredients(text)
 
     return {
@@ -86,9 +90,9 @@ if __name__ == "__main__":
         "fitness_friendly": ["sugar", "salt", "fat", "corn syrup", "maltodextrin"]
     }
     test_categories = ['vegan', 'nut_allergy', 'fitness_friendly']
-    result = analyze_label("test3.png", test_categories, category_map)
+    result = analyze_label("test2.png", test_categories, category_map)
 
-    print("🧾 OCR Text:\n", extract_text("test3.png"))
+    print("🧾 OCR Text:\n", extract_text("test2.png"))
     print("\n🍽️ Extracted Ingredients:", result['ingredients'])
     print("❌ Dietary Restrictions Found:", result['diet_flags'])
     print("☣️ Toxic Ingredients Found:", result['tox_flags'])

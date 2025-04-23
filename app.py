@@ -85,13 +85,15 @@ def index():
 
             text = extract_text(image_path)
             ingredients_list = extract_ingredients(text)
-            ingredients_combined = " ".join(ingredients_list)
-
-            diet_flags = check_dietary_restrictions(ingredients_combined, selected_categories, RESTRICTION_MAP)
-            tox_flags = check_toxic_ingredients(ingredients_combined)
-
-            results["restricted"] = ", ".join(diet_flags) if diet_flags else "None 🎉"
-            results["toxicity"] = {ingredient: "High" for ingredient in tox_flags}
+            if len(ingredients_list) == 0 :
+                results["restricted"] =  "Ingredients Not Found. Please Upload a clear image!!"
+                results["toxicity"] = {}
+            else:
+                ingredients_combined = " ".join(ingredients_list)
+                diet_flags = check_dietary_restrictions(ingredients_combined,selected_categories , RESTRICTION_MAP)
+                tox_flags = check_toxic_ingredients(ingredients_combined)
+                results["restricted"] = ", ".join(diet_flags) if diet_flags else "None 🎉"
+                results["toxicity"] = {ingredient: "High" for ingredient in tox_flags}
 
             # Save to database
             new_scan = Scan(
@@ -143,7 +145,9 @@ def signup():
         if User.query.filter_by(username=username).first():
             flash("Username already exists", "warning")
         else:
-            hashed_pw = generate_password_hash(password)
+            #hashed_pw = generate_password_hash(password)
+            hashed_pw=generate_password_hash(password, method="pbkdf2:sha256")
+
             new_user = User(username=username, password=hashed_pw, diet_preferences=prefs_str)
             db.session.add(new_user)
             db.session.commit()
@@ -225,3 +229,4 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
+
