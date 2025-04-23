@@ -83,6 +83,7 @@
         </div>
       {% else %}
         <div class="mb-3">
+          <a href="{{ url_for('guest') }}" class="btn btn-outline-success btn-sm w-100 mb-2">Guest Mode</a>
           <a href="{{ url_for('login') }}" class="btn btn-outline-success btn-sm w-100 mb-2">🔐 Login</a>
           <a href="{{ url_for('signup') }}" class="btn btn-outline-primary btn-sm w-100">📝 Sign Up</a>
         </div>
