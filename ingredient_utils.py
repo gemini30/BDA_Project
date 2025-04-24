@@ -1,32 +1,47 @@
-import platform
-import pytesseract
-import cv2
+# import platform
+# import pytesseract
+# import cv2
 import numpy as np
 from PIL import Image
 import re
 import difflib
 from typing import List, Dict
+from google.cloud import vision
+import io
+
 
 # === Set Tesseract Path for Windows ===
-if platform.system() == 'Windows':
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-elif platform.system() == 'Darwin':  
-    pytesseract.pytesseract.tesseract_cmd = '/opt/homebrew/bin/tesseract' #brew install tesseract
+# if platform.system() == 'Windows':
+#     pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+# elif platform.system() == 'Darwin':  
+#     pytesseract.pytesseract.tesseract_cmd = '/opt/homebrew/bin/tesseract' #brew install tesseract
 
 
 # === Preprocess Image for OCR ===
-def preprocess_image(image_path: str) -> np.ndarray:
-    img = cv2.imread(image_path)
-    img = cv2.resize(img, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    denoised = cv2.fastNlMeansDenoising(gray, h=30)
-    _, thresh = cv2.threshold(denoised, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    return thresh
+# def preprocess_image(image_path: str) -> np.ndarray:
+#     img = cv2.imread(image_path)
+#     img = cv2.resize(img, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+#     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+#     denoised = cv2.fastNlMeansDenoising(gray, h=30)
+#     _, thresh = cv2.threshold(denoised, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+#     return thresh
 
 # === OCR Text Extraction ===
+# def extract_text(image_path: str) -> str:
+#     processed_img = preprocess_image(image_path)
+#     return pytesseract.image_to_string(processed_img)
+
 def extract_text(image_path: str) -> str:
-    processed_img = preprocess_image(image_path)
-    return pytesseract.image_to_string(processed_img)
+    client = vision.ImageAnnotatorClient()
+
+    with io.open(image_path, 'rb') as image_file:
+        content = image_file.read()
+
+    image = vision.Image(content=content)
+    response = client.text_detection(image=image)
+
+    texts = response.text_annotations
+    return texts[0].description if texts else ""
 
 # === Ingredient Extraction Using Fuzzy Matching ===
 def extract_ingredients(text: str) -> List[str]:

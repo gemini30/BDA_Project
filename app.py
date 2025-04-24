@@ -18,9 +18,12 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Replace with a secure secret in production
 
 # === Configurations ===
-UPLOAD_FOLDER = 'static/uploads'
+UPLOAD_FOLDER = '/tmp/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///eatsafe.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///eatsafe.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -223,6 +226,17 @@ def stats():
     ingredient_data = Counter(all_ingredients).most_common()
 
     return render_template("stats.html", ingredient_data=ingredient_data)
+
+@app.route("/init-db")
+def init_db():
+    try:
+        with app.app_context():
+            db.create_all()
+        return "Tables created successfully!"
+    except Exception as e:
+        return f"Failed to create tables: {e}"
+
+
 
 # === App Runner ===
 if __name__ == "__main__":

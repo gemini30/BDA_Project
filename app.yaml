@@ -10,3 +10,10 @@ handlers:
 
 - url: /.*
   script: auto
+
+env_variables:
+  SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://eatsafe_user:bda123@/eatsafe-db?host=/cloudsql/bda-123-457420:us-central1:eatsafe-sql
+
+beta_settings:
+  cloud_sql_instances: bda-123-457420:us-central1:eatsafe-sql
+
