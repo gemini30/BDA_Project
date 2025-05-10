@@ -227,7 +227,8 @@ def profile():
                 flash("Username updated!", "success")
 
             if new_password:
-                current_user.password = generate_password_hash(new_password) # password hashing
+                #current_user.password = generate_password_hash(new_password) # password hashing
+                current_user.password = generate_password_hash(new_password,method='pbkdf2:sha256')
                 flash("Password updated!", "success")
 
             db.session.commit()
